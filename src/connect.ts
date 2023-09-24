@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 export const connect = async () => {
-    await mongoose.connect(`mongodb://${process.env.SIRIUS_X_MONGO_USERNAME}:${process.env.SIRIUS_X_MONGO_PASSWORD}@${process.env.SIRIUS_X_DB}:27017/${process.env.SIRIUS_X_MONGO_AUTHSOURCE ? `?authSource=${process.env.SIRIUS_X_MONGO_AUTHSOURCE}` : ''}`);
+    await mongoose.connect(`mongodb+srv://${process.env.SIRIUS_X_MONGO_USERNAME}:${process.env.SIRIUS_X_MONGO_PASSWORD}@statisticsdb.ypcrfla.mongodb.net/?retryWrites=true&w=majority`);
 
     console.log('Connected to db');
 
