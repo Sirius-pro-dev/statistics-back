@@ -5,9 +5,13 @@ import path from 'node:path';
 
 import { connect } from './connect';
 
+const studentRoutes = require('./routes/student/index.ts');
+
 const fastify = Fastify({
   logger: true
 })
+
+fastify.register(studentRoutes);
 
 fastify.get('/', async function handler (request, reply) {
   return { hello: 'world' }
