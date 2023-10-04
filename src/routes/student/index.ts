@@ -2,6 +2,15 @@ import Student from '../../models/student';
 const errorByID = require('../../json/students/byID/error.json')
 
 async function routes(fastify) {
+  fastify.get('/students', async (request, reply) => {
+    try {
+      const students = await Student.find();
+      reply.status(200).send(students);
+    } catch (error) {
+      console.error(error);
+      reply.status(500).send('Internal Server Error');
+    }
+  });
   fastify.get('/students/:id', async (request, reply) => {
     try {
       const {id} = request.params;

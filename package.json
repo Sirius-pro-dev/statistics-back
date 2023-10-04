@@ -9,13 +9,15 @@
     "up:prod": "node dist/src/server",
     "deploy:stop": "docker compose down --remove-orphans",
     "deploy:start": "docker compose up -d",
-    "rebuild": "npm run deploy:stop && npm run deploy:start"
+    "rebuild": "npm run deploy:stop && npm run deploy:start",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.6.2",
+    "jest": "^29.7.0",
     "ts-node": "^10.9.1"
   },
   "dependencies": {
