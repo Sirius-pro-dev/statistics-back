@@ -6,12 +6,13 @@ import path from 'node:path';
 import { connect } from './connect';
 
 const studentRoutes = require('./routes/student/index.ts');
+const teacherSchema = require('./routes/teacher/index.ts');
 
 const fastify = Fastify({
   logger: true
 })
 
-fastify.register(studentRoutes);
+fastify.register(studentRoutes, teacherSchema);
 
 fastify.get('/', async function handler (request, reply) {
   return { hello: 'world' }
