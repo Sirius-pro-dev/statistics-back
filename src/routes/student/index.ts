@@ -1,5 +1,6 @@
 import Student from '../../models/student';
 const errorByID = require('../../json/students/byID/error.json')
+const authMiddleware = require('../../middleware/authMiddleware');
 
 async function routes(fastify) {
   fastify.get('/students', async (request, reply) => {
@@ -45,7 +46,7 @@ async function routes(fastify) {
       reply.status(500).send('Internal Server Error');
     }
   });
-  fastify.post('/students/:id/grades', async (request, reply) => {
+  fastify.post('/students/:id/grades', {preHandler: [authMiddleware]}, async (request, reply) => {
     try {
       const {id} = request.params;
       if (!/^[0-9a-fA-F]{24}$/.test(id)) {
@@ -63,16 +64,6 @@ async function routes(fastify) {
       student.grades.push(grade);
       await student.save();
       reply.status(201).send({message: 'Оценка успешно добавлена', success: true});
-    } catch (error) {
-      console.error(error);
-      reply.code(500).send('Internal Server Error');
-    }
-  });
-  fastify.post('/students/', async (request, reply) => {
-    try {
-      const student = new Student(request.body);
-      await student.save();
-      reply.status(201).send({message: 'Студент создан', success: true});
     } catch (error) {
       console.error(error);
       reply.code(500).send('Internal Server Error');

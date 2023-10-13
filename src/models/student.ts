@@ -14,14 +14,27 @@ const studentSchema = new mongoose.Schema({
     },
     groupNumber: {
         type: String,
-        required: true
+        default: undefined
     },
     grades: {
         type: [Number],
-        required: true
+        default: []
     },
     passList: {
         type: [String],
+        default: []
+    },
+    role: {
+        type: String,
+        default: 'Студент'
+    },
+    email: {
+        type: String,
+        unique: true,
+        required: true
+      },
+    password: {
+        type: String,
         required: true
     }
 })

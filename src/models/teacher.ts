@@ -15,6 +15,19 @@ const teacherSchema = new mongoose.Schema({
     subject: {
         type: String,
         required: true
+    },
+    role: {
+        type: String,
+        default: 'Преподаватель'
+    },
+    email: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
     }
 })
 

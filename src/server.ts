@@ -5,6 +5,8 @@ import path from 'node:path';
 
 import { connect } from './connect';
 
+const teacherAuth = require('./routes/auth/teacher/index.ts')
+const studentAuth = require('./routes/auth/student/index.ts');
 const studentRoutes = require('./routes/student/index.ts');
 const teacherSchema = require('./routes/teacher/index.ts');
 
@@ -12,6 +14,7 @@ const fastify = Fastify({
   logger: true
 })
 
+fastify.register(studentAuth, teacherAuth);
 fastify.register(studentRoutes, teacherSchema);
 
 fastify.get('/', async function handler (request, reply) {
