@@ -45,18 +45,6 @@ async function routes(fastify) {
             reply.status(500).send('Internal Server Error');
         }
     });
-
-    fastify.post('/teachers', async (request, reply) => {
-        try {
-            const teacherData = request.body;
-            const teacher = new Teacher(teacherData);
-            await teacher.save();
-            reply.status(201).send({ message: 'Учитель создан', success: true });
-        } catch (error) {
-            console.error(error);
-            reply.status(500).send('Internal Server Error');
-        }
-    });
 }
 
 module.exports = routes;
