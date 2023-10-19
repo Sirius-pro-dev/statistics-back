@@ -10,16 +10,12 @@ const studentAuth = require('./routes/auth/student/index.ts');
 const studentRoutes = require('./routes/student/index.ts');
 const teacherSchema = require('./routes/teacher/index.ts');
 
-const fastify = Fastify({
+export const fastify = Fastify({
   logger: true
 })
 
 fastify.register(studentAuth, teacherAuth);
 fastify.register(studentRoutes, teacherSchema);
-
-fastify.get('/', async function handler (request, reply) {
-  return { hello: 'world' }
-})
 
 fastify.setErrorHandler(function (error, request, reply) {
   reply.status(400).send({error});
