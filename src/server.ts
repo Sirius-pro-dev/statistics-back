@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import autoload from '@fastify/autoload';  
+import autoload from '@fastify/autoload';
 import Fastify from 'fastify'
 import path from 'node:path';
 
@@ -18,7 +18,7 @@ fastify.register(studentAuth, teacherAuth);
 fastify.register(studentRoutes, teacherSchema);
 
 fastify.setErrorHandler(function (error, request, reply) {
-  reply.status(400).send({error});
+  reply.status(500).send({ error: 'Internal Server Error' });
 })
 
 const start = async () => {
