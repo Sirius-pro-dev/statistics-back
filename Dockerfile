@@ -1,15 +1,23 @@
-FROM 'node:18'
+# Use an official Node.js runtime as a base image
+FROM node:18
 
-RUN mkdir -p /usr/src/app/dist/
-WORKDIR /usr/src/app/
+# Set the working directory in the container to /usr/src/app
+WORKDIR /usr/src/app
 
-COPY ./dist /usr/src/app/dist/
-COPY ./package.json /usr/src/app/package.json
-COPY ./.env /usr/src/app/.env
-COPY ./package-lock.json /usr/src/app/package-lock.json
+# Copy package.json and package-lock.json to the working directory
+COPY package.json ./
 
-RUN npm ci --omit=dev
+# Install any needed packages specified in package.json
+RUN npm install
 
-EXPOSE 3001
+# Copy the current directory contents into the container at /usr/src/app
+COPY . .
 
-CMD ["npm", "run", "up:prod"]
+# Make port 3020 available to the world outside this container
+EXPOSE 3020
+
+# Define environment variable NODE_ENV to production
+ENV NODE_ENV production
+
+# Run ts-node when the container launches
+CMD ["npm", "start"]

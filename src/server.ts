@@ -23,7 +23,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 
 const start = async () => {
   try {
-    await fastify.listen({ port: Number(process.env.SIRIUS_X_STATISTICS_PORT) || 3001 });
+    await fastify.listen({ port: Number(process.env.SIRIUS_X_STATISTICS_PORT) || 3020, host: '0.0.0.0' });
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)

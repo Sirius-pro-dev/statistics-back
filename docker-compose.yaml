@@ -1,0 +1,23 @@
+version: '3'
+services:
+  app:
+    build: .
+    environment:
+      - SIRIUS_X_MONGO_USERNAME=admin
+      - SIRIUS_X_MONGO_PASSWORD=ws7WHrKTZyD165iM
+      - SIRIUS_X_DB=mongo
+      - SIRIUS_X_STATISTICS_PORT=3020
+      - SECRET_KEY=123321
+      - TEACHER_EMAIL=albert@mail.ru
+      - TEACHER_PASSWORD=albert
+    ports:
+      - "3020:3020"
+    volumes:
+      - ./src:/usr/src/app/src
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=ws7WHrKTZyD165iM
+    ports:
+      - "27017:27017"

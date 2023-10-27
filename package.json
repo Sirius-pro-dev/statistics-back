@@ -5,11 +5,6 @@
   "main": "src/server.ts",
   "scripts": {
     "start": "ts-node .",
-    "build": "tsc",
-    "up:prod": "node dist/src/server",
-    "deploy:stop": "docker compose down --remove-orphans",
-    "deploy:start": "docker compose up -d",
-    "rebuild": "npm run deploy:stop && npm run deploy:start",
     "test": "jest"
   },
   "keywords": [],
