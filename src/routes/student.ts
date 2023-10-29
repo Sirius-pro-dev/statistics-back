@@ -6,9 +6,9 @@ import {
     studentGrades,
     studentGradesAdd
 } from '../controllers/student'
-const authMiddleware = require('../middleware/authMiddleware')
+import {authMiddleware} from '../middleware/authMiddleware'
 
-async function routes(fastify) {
+export default async function (fastify) {
     fastify.post('/student/registration', async (request, reply) => {
         await studentRegistration(request.body)
         reply.status(201).send({message: "Пользователь успешно зарегестрирован", success: true});
@@ -39,5 +39,3 @@ async function routes(fastify) {
         reply.status(201).send({message: "Оценка добавлена", success: true});
     })
 }
-
-module.exports = routes;

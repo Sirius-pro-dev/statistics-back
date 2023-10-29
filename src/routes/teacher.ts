@@ -6,7 +6,7 @@ import {
     teacherSubject
 } from '../controllers/teacher'
 
-async function routes(fastify) {
+export default async function (fastify) {
     fastify.post('/teacher/registration', async (request, reply) => {
         await teacherRegistration(request.body)
         reply.status(201).send({message: "Пользователь успешно зарегестрирован", success: true});
@@ -32,5 +32,3 @@ async function routes(fastify) {
         reply.status(201).send({message: subject, success: true});
     })
 }
-
-module.exports = routes;
