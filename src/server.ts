@@ -1,21 +1,17 @@
-import 'dotenv/config';
-import autoload from '@fastify/autoload';
+import 'dotenv/config'
+import autoload from '@fastify/autoload'
 import Fastify from 'fastify'
-import path from 'node:path';
-
+import path from 'node:path'
 import { connect } from './connect';
 
-const teacherAuth = require('./routes/auth/teacher/index.ts')
-const studentAuth = require('./routes/auth/student/index.ts');
-const studentRoutes = require('./routes/student/index.ts');
-const teacherSchema = require('./routes/teacher/index.ts');
+const teacher = require('./routes/teacher')
+const student = require('./routes/student')
 
 export const fastify = Fastify({
   logger: true
 })
 
-fastify.register(studentAuth, teacherAuth);
-fastify.register(studentRoutes, teacherSchema);
+fastify.register(teacher, student)
 
 fastify.setErrorHandler(function (error, request, reply) {
   reply.status(500).send({ error: 'Internal Server Error' });
@@ -23,7 +19,9 @@ fastify.setErrorHandler(function (error, request, reply) {
 
 const start = async () => {
   try {
-    await fastify.listen({ port: Number(process.env.SIRIUS_X_STATISTICS_PORT) || 3020, host: '0.0.0.0' });
+    if (require.main === module) {
+      await fastify.listen({ port: Number(process.env.SIRIUS_X_STATISTICS_PORT) || 3020, host: '0.0.0.0' });
+    }
   } catch (err) {
     fastify.log.error(err)
     process.exit(1)
