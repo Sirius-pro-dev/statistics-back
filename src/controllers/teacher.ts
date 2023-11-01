@@ -10,7 +10,7 @@ const generateAccessToken = (id, role) => {
     return jwt.sign(payload, process.env.SECRET_KEY, {expiresIn: "24h"})
 }
 
-export async function teacherRegistration({ email, password, firstname, lastname }) {
+async function teacherRegistration({ email, password, firstname, lastname }) {
     const candidate = await Teacher.findOne({email})
     if (candidate) {
         throw new Error(`Пользователь c почтой ${email} уже существует`)
@@ -19,7 +19,7 @@ export async function teacherRegistration({ email, password, firstname, lastname
     return await Teacher.create({email, password: hashPassword, firstname, lastname})
 }
 
-export async function teacherLogin({ email, password }) {
+async function teacherLogin({ email, password }) {
     const teacher = await Teacher.findOne({email})
     const validPassword = bcrypt.compareSync(password, teacher.password)
     if (!validPassword || !teacher) {
@@ -28,11 +28,11 @@ export async function teacherLogin({ email, password }) {
     return generateAccessToken(teacher._id, teacher.role)
 }
 
-export async function teachersAll() {
+async function teachersAll() {
     return Teacher.find()
 }
 
-export async function teacherID({ id }) {
+async function teacherID({ id }) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -43,7 +43,7 @@ export async function teacherID({ id }) {
     return teacher
 }
 
-export async function teacherSubject({ id }) {
+async function teacherSubject({ id }) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -52,4 +52,12 @@ export async function teacherSubject({ id }) {
         throw new Error(`Нет такого студента`)
     }
     return teacher.subject
+}
+
+export default {
+    teacherRegistration,
+    teacherLogin,
+    teachersAll,
+    teacherID,
+    teacherSubject
 }
