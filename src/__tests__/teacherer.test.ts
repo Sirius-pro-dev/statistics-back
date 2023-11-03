@@ -14,6 +14,7 @@ jest.mock('../connect.ts',  () => {
 describe('teacher test', () => {
   beforeAll(async () => {
     await fastify.ready()
+    await require('../setupTest')();
   })
 
   afterAll(async () => {
