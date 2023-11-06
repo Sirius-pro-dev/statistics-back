@@ -21,10 +21,9 @@ async function studentRegistration({ email, password, firstname, lastname }) {
 
 async function studentLogin({ email, password }) {
     const student = await Student.findOne({email})
-    const validPassword = bcrypt.compareSync(password, student.password)
-    if (!validPassword || !student) {
-        throw new Error(`Неправельная почта или пароль`)
-    }
+    if (!student || !bcrypt.compareSync(password, student.password)) {
+        throw new Error(`Неправильная почта или пароль`);
+      }
     return generateAccessToken(student._id, student.role)
 }
 
@@ -65,7 +64,11 @@ async function studentGradesAdd({ id, grade }) {
     if (!grade) {
         throw new Error(`Некорректный формат тела запроса`)
     }
-    return await Student.create(student.grades.push(grade))
+    
+    student.grades.push(grade);
+    await student.save();
+
+    return student;
 }
 
 export default {

@@ -28,6 +28,7 @@
     "fastify-validator": "^1.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.2",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "uuid": "^9.0.1"
   }
 }
