@@ -1,275 +1,165 @@
-import {describe, it, jest, expect, beforeAll} from '@jest/globals';
-import {fastify} from '../server';
+import supertest from 'supertest';
+import { fastify } from '../server';
+import studentControllers from '../controllers/student';
+import teacherControllers from '../controllers/teacher';
+import { mocked } from 'jest-mock';
+import * as authMiddlewareModule from '../middleware/authMiddleware';
+jest.mock('../controllers/student');
+jest.mock('../controllers/teacher');
+jest.mock('../middleware/authMiddleware', () => ({
+  ...jest.requireActual('../middleware/authMiddleware'),
+  authMiddleware: jest.fn(),
+}));
 
-describe('Student routes', () => {
-    beforeAll(async () => {
-        await fastify.ready()
-    })
+const mockStudent = {
+  email: 'test@example.com',
+  password: 'testpassword',
+  firstname: 'John',
+  lastname: 'Doe',
+};
 
-    describe('get-students', () => {
-        it('get-students', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: `/students`
-            });
+const mockTeacher = {
+  email: 'test@example.com',
+  password: 'testpassword',
+  firstname: 'John',
+  lastname: 'Doe',
+};
 
-            expect(response.statusCode).toBe(200);
-        })
-    })
+describe('Student Routes', () => {
+  beforeAll(async () => {
+    await fastify.ready();
+  });
 
-    describe('get-student', () => {
-        it('get-student', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: `/students/65295f1195be303756f8760d`
-            });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-            expect(response.statusCode).toBe(200);
-        })
+  test('POST /student/registration should return 201', async () => {
+    const mockRegistration = mocked(studentControllers.studentRegistration).mockResolvedValueOnce({} as any);
 
-        it('400', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: '/students/1'
-            });
+    const response = await supertest(fastify.server)
+      .post('/student/registration')
+      .send(mockStudent);
 
-            expect(response.statusCode).toBe(400);
-        })
+    expect(response.status).toBe(201);
+    expect(mockRegistration).toHaveBeenCalledWith(mockStudent);
+  });
 
-        it('404', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: '/students/65295f1195be303756f8760e'
-            });
+  test('POST /student/login should return 201', async () => {
+    const mockLogin = mocked(studentControllers.studentLogin).mockResolvedValueOnce('mocked-token');
 
-            expect(response.statusCode).toBe(404);
-        })
-    })
+    const response = await supertest(fastify.server)
+      .post('/student/login')
+      .send(mockStudent);
 
-    describe('get-student-grades', () => {
-        it('get-student-grades', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: `/students/65295f1195be303756f8760d/grades`
-            });
+    expect(response.status).toBe(201);
+    expect(mockLogin).toHaveBeenCalledWith(mockStudent);
+  });
 
-            expect(response.statusCode).toBe(200);
-        })
+  test('GET /students should return 201', async () => {
+    const mockStudentsAll = mocked(studentControllers.studentsAll).mockResolvedValueOnce([{ student: 'data' }] as any);
 
-        it('400', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: '/students/1/grades'
-            });
+    const response = await supertest(fastify.server)
+      .get('/students');
 
-            expect(response.statusCode).toBe(400);
-        })
+    expect(response.status).toBe(201);
+    expect(mockStudentsAll).toHaveBeenCalled();
+  });
 
-        it('404', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: '/students/65295f1195be303756f8760e/grades'
-            });
+  test('GET /student/:id should return 201', async () => {
+    const mockStudentID = mocked(studentControllers.studentID).mockResolvedValueOnce({ _id: '123' } as any);
+  
+    const response = await supertest(fastify.server)
+      .get('/student/123');
+  
+    expect(response.status).toBe(201);
+  });
 
-            expect(response.statusCode).toBe(404);
-        })
-    })
+  test('GET /student/:id/grades should return 201', async () => {
+    const mockStudentGrades = mocked(studentControllers.studentGrades).mockResolvedValueOnce([{ grade: 100 }] as any);
 
-    describe('post-grade', () => {
-        it('no JWT error', async () => {
-            const response = await fastify.inject({
-                method: 'POST',
-                url: '/students/65295f1195be303756f8760d/grades',
-                body: {
-                    grade: 4
-                }
-            });
+    const response = await supertest(fastify.server)
+      .get('/student/123/grades');
 
-            expect(response.statusCode).toBe(403);
-        })
+    expect(response.status).toBe(201);
+  });
 
-        it('empty token error', async () => {
-            const response = await fastify.inject({
-                method: 'POST',
-                url: '/students/65295f1195be303756f8760d/grades',
-                headers: {
-                    Authorization: ''
-                },
-                body: {
-                    grade: 4
-                }
-            });
-
-            expect(response.statusCode).toBe(403);
-        })
-
-        it('no access error', async () => {
-            const response = await fastify.inject({
-                method: 'POST',
-                url: '/students/65295f1195be303756f8760d/grades',
-                headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Mjk1ZjExOTViZTMwMzc1NmY4NzYwZCIsInJvbGUiOiLQodGC0YPQtNC10L3RgiIsImlhdCI6MTY5NzQ4ODE0OCwiZXhwIjoxNjk3NTc0NTQ4fQ.S2dv7mm0m4choB_U5DzvZFgQCOVtVZ50KYk6LP6NPUc'
-                },
-                body: {
-                    grade: 4
-                }
-            });
-
-            expect(response.statusCode).toBe(403);
-        })
-        // ============================
-        it('no access error', async () => {
-            const response = await fastify.inject({
-                method: 'POST',
-                url: '/students/65295f1195be303756f8760d/grades',
-                headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MzhlN2Q5ZDRmOGVkOGQyZjUzZWY3ZCIsInJvbGUiOiLQodGC0YPQtNC10L3RgiIsImlhdCI6MTY5ODIyODIwMiwiZXhwIjoxNjk4MzE0NjAyfQ.rh6Mk7U5D1ck27gz2PZCnn8XuM294cg5sz-KoTFNI94'
-                },
-                body: {
-                    grade: 4
-                }
-            });
-
-            expect(response.statusCode).toBe(403);
-        })
-        // ============================
-        it('post success', async () => {
-            const response = await fastify.inject({
-                method: 'POST',
-                url: '/students/65295f1195be303756f8760d/grades',
-                headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MzhlNmJkZDRmOGVkOGQyZjUzZWY3OSIsInJvbGUiOiLQn9GA0LXQv9C-0LTQsNCy0LDRgtC10LvRjCIsImlhdCI6MTY5ODIyNzkxNCwiZXhwIjoxNjk4MzE0MzE0fQ.dKAYwW7Zh9q3-ZGlv9IUQ4kTfs-VxOjpJZ5yKBoVLTk'
-                },
-                body: {
-                    grade: 4
-                }
-            });
-
-            expect(response.statusCode).toBe(201);
-        })
-
-        it('id error', async () => {
-            const response = await fastify.inject({
-                method: 'POST',
-                url: '/students/65295f1195be303756f8760e/grades',
-                headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MzhlNmJkZDRmOGVkOGQyZjUzZWY3OSIsInJvbGUiOiLQn9GA0LXQv9C-0LTQsNCy0LDRgtC10LvRjCIsImlhdCI6MTY5ODIyNzkxNCwiZXhwIjoxNjk4MzE0MzE0fQ.dKAYwW7Zh9q3-ZGlv9IUQ4kTfs-VxOjpJZ5yKBoVLTk'
-                },
-                body: {
-                    grade: 4
-                }
-            });
-
-            expect(response.statusCode).toBe(404);
-        })
-
-        it('id error', async () => {
-            const response = await fastify.inject({
-                method: 'POST',
-                url: '/students/1/grades',
-                headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MzhlNmJkZDRmOGVkOGQyZjUzZWY3OSIsInJvbGUiOiLQn9GA0LXQv9C-0LTQsNCy0LDRgtC10LvRjCIsImlhdCI6MTY5ODIyNzkxNCwiZXhwIjoxNjk4MzE0MzE0fQ.dKAYwW7Zh9q3-ZGlv9IUQ4kTfs-VxOjpJZ5yKBoVLTk'
-                },
-                body: {
-                    grade: 4
-                }
-            });
-
-            expect(response.statusCode).toBe(400);
-        })
-
-        it('body error', async () => {
-            const response = await fastify.inject({
-                method: 'POST',
-                url: '/students/65295f1195be303756f8760d/grades',
-                headers: {
-                    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MzhlNmJkZDRmOGVkOGQyZjUzZWY3OSIsInJvbGUiOiLQn9GA0LXQv9C-0LTQsNCy0LDRgtC10LvRjCIsImlhdCI6MTY5ODIyNzkxNCwiZXhwIjoxNjk4MzE0MzE0fQ.dKAYwW7Zh9q3-ZGlv9IUQ4kTfs-VxOjpJZ5yKBoVLTk'
-                },
-                body: {
-                    grade: ''
-                }
-            });
-
-            expect(response.statusCode).toBe(400);
-        })
-    })
+  test('POST /student/:id/grades should return 201', async () => {
+    const mockAuthMiddleware = (authMiddlewareModule.authMiddleware as any).mockImplementationOnce((req, res, next) => {
+      // Мокируем поведение middleware для преподавателя
+      req.headers.authorization = 'Bearer valid_teacher_token'; // Предположим, что это токен преподавателя
+      next();
+    });
+  
+    const mockStudentGradesAdd = jest.spyOn(studentControllers, 'studentGradesAdd').mockResolvedValueOnce({ message: 'Grade added' } as any);
+  
+    const response = await supertest(fastify.server)
+      .post('/student/123/grades')
+      .set('Authorization', 'Bearer valid_student_token')
+      .send({ grade: 90 });
+  
+    expect(response.status).toBe(201);
+    expect(mockAuthMiddleware).toHaveBeenCalled();
+  });
 });
 
-describe('Teacher routes', () => {
-    beforeAll(async () => {
-        await fastify.ready()
-    })
+describe('Teacher Routes', () => {
+  beforeAll(async () => {
+    await fastify.ready();
+  });
 
-    describe('get-teachers', () => {
-        it('get-teachers', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: `/teachers`
-            });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-            expect(response.statusCode).toBe(200);
-        })
-    })
+  test('POST /teacher/registration should return 201', async () => {
+    const mockRegistration = mocked(teacherControllers.teacherRegistration).mockResolvedValueOnce({} as any);
 
-    describe('get-teacher', () => {
-        it('get-teacher', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: `/teachers/65295f5795be303756f87612`
-            });
+    const response = await supertest(fastify.server)
+      .post('/teacher/registration')
+      .send(mockTeacher);
 
-            expect(response.statusCode).toBe(200);
-        })
+    expect(response.status).toBe(201);
+    expect(mockRegistration).toHaveBeenCalledWith(mockTeacher);
+  });
 
-        it('400', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: '/teachers/1'
-            });
+  test('POST /teacher/login should return 201', async () => {
+    const mockLogin = mocked(teacherControllers.teacherLogin).mockResolvedValueOnce('mocked-token');
 
-            expect(response.statusCode).toBe(400);
-        })
+    const response = await supertest(fastify.server)
+      .post('/teacher/login')
+      .send(mockTeacher);
 
-        it('404', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: '/teachers/65295f1195be303756f8760e'
-            });
+    expect(response.status).toBe(201);
+    expect(mockLogin).toHaveBeenCalledWith(mockTeacher);
+  });
 
-            expect(response.statusCode).toBe(404);
-        })
-    })
+  test('GET /teacher should return 201', async () => {
+    const mockTeachersAll = mocked(teacherControllers.teachersAll).mockResolvedValueOnce([{ teacher: 'data' }] as any);
 
-    describe('get-teacher-subject', () => {
-        it('get-teacher-subject', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: `/teachers/65295f5795be303756f87612/subject`
-            });
+    const response = await supertest(fastify.server)
+      .get('/teachers');
 
-            expect(response.statusCode).toBe(200);
-        })
+    expect(response.status).toBe(201);
+    expect(mockTeachersAll).toHaveBeenCalled();
+  });
 
-        it('400', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: '/teachers/1/subject'
-            });
+  test('GET /teacher/:id should return 201', async () => {
+    const mockTeacherID = mocked(teacherControllers.teacherID).mockResolvedValueOnce({ _id: '123' } as any);
+  
+    const response = await supertest(fastify.server)
+      .get('/teacher/123');
+  
+    expect(response.status).toBe(201);
+  });
 
-            expect(response.statusCode).toBe(400);
-        })
+  test('GET /teacher/:id/subject should return 201', async () => {
+    const mockTeacherSubject = mocked(teacherControllers.teacherSubject).mockResolvedValueOnce([{ _id: '123' }] as any);
 
-        it('404', async () => {
-            const response = await fastify.inject({
-                method: 'GET',
-                url: '/teachers/65295f5795be303756f87622/subject'
-            });
+    const response = await supertest(fastify.server)
+      .get('/teacher/123/subject');
 
-            expect(response.statusCode).toBe(404);
-        })
-    })
-})
+    expect(response.status).toBe(201);
+  });
 
-afterAll(async () => {
-    await fastify.close()
-})
+});

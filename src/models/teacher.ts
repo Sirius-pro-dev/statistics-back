@@ -13,8 +13,7 @@ const teacherSchema = new mongoose.Schema({
         type: String
     },
     subject: {
-        type: String,
-        required: true
+        type: String
     },
     role: {
         type: String,

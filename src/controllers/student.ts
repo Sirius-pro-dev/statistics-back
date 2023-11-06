@@ -10,7 +10,7 @@ const generateAccessToken = (id, role) => {
     return jwt.sign(payload, process.env.SECRET_KEY, {expiresIn: "24h"})
 }
 
-export async function studentRegistration({ email, password, firstname, lastname }) {
+async function studentRegistration({ email, password, firstname, lastname }) {
     const candidate = await Student.findOne({email})
     if (candidate) {
         throw new Error(`Пользователь c почтой ${email} уже существует`)
@@ -19,20 +19,19 @@ export async function studentRegistration({ email, password, firstname, lastname
     return await Student.create({email, password: hashPassword, firstname, lastname})
 }
 
-export async function studentLogin({ email, password }) {
+async function studentLogin({ email, password }) {
     const student = await Student.findOne({email})
-    const validPassword = bcrypt.compareSync(password, student.password)
-    if (!validPassword || !student) {
-        throw new Error(`Неправельная почта или пароль`)
-    }
+    if (!student || !bcrypt.compareSync(password, student.password)) {
+        throw new Error(`Неправильная почта или пароль`);
+      }
     return generateAccessToken(student._id, student.role)
 }
 
-export async function studentsAll() {
+async function studentsAll() {
     return Student.find()
 }
 
-export async function studentID({ id }) {
+async function studentID({ id }) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -43,7 +42,7 @@ export async function studentID({ id }) {
     return student
 }
 
-export async function studentGrades({ id }) {
+async function studentGrades({ id }) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -54,7 +53,7 @@ export async function studentGrades({ id }) {
     return student.grades
 }
 
-export async function studentGradesAdd({ id, grade }) {
+async function studentGradesAdd({ id, grade }) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -65,5 +64,18 @@ export async function studentGradesAdd({ id, grade }) {
     if (!grade) {
         throw new Error(`Некорректный формат тела запроса`)
     }
-    return await Student.create(student.grades.push(grade))
+    
+    student.grades.push(grade);
+    await student.save();
+
+    return student;
+}
+
+export default {
+    studentRegistration,
+    studentLogin,
+    studentsAll,
+    studentID,
+    studentGrades,
+    studentGradesAdd
 }
