@@ -21,10 +21,9 @@ async function teacherRegistration({ email, password, firstname, lastname }) {
 
 async function teacherLogin({ email, password }) {
     const teacher = await Teacher.findOne({email})
-    const validPassword = bcrypt.compareSync(password, teacher.password)
-    if (!validPassword || !teacher) {
-        throw new Error(`Неправельная почта или пароль`)
-    }
+    if (!teacher || !bcrypt.compareSync(password, teacher.password)) {
+        throw new Error(`Неправильная почта или пароль`);
+      }
     return generateAccessToken(teacher._id, teacher.role)
 }
 
@@ -38,7 +37,7 @@ async function teacherID({ id }) {
     }
     const teacher = await Teacher.findById(id)
     if (!teacher) {
-        throw new Error(`Нет такого студента`)
+        throw new Error(`Нет такого учителя`)
     }
     return teacher
 }
@@ -49,7 +48,7 @@ async function teacherSubject({ id }) {
     }
     const teacher = await Teacher.findById(id)
     if (!teacher) {
-        throw new Error(`Нет такого студента`)
+        throw new Error(`Нет такого учителя`)
     }
     return teacher.subject
 }
