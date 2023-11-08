@@ -13,11 +13,4 @@ services:
     ports:
       - "3020:3020"
     volumes:
-      - ./src:/usr/src/app/src
-  mongo:
-    image: mongo
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=ws7WHrKTZyD165iM
-    ports:
-      - "27017:27017"
+      - ./src:/usr/src/app/SECRET_KEY
