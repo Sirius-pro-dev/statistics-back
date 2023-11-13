@@ -53,7 +53,7 @@ async function studentGrades({ id }) {
     return student.grades
 }
 
-async function studentGradesAdd({ id, grade }) {
+async function studentGradesAdd({ id }, { grade }) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -64,7 +64,7 @@ async function studentGradesAdd({ id, grade }) {
     if (!grade) {
         throw new Error(`Некорректный формат тела запроса`)
     }
-    
+
     student.grades.push(grade);
     await student.save();
 

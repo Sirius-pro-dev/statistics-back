@@ -17,12 +17,12 @@ export default async function (fastify) {
     })
 
     fastify.get('/teacher/:id', async (request, reply) => {
-        const teacher = await teacherControllers.teacherID(request.body)
+        const teacher = await teacherControllers.teacherID(request.params)
         reply.status(201).send({message: teacher, success: true});
     })
 
     fastify.get('/teacher/:id/subject', async (request, reply) => {
-        const subject = await teacherControllers.teacherSubject(request.body)
+        const subject = await teacherControllers.teacherSubject(request.params)
         reply.status(201).send({message: subject, success: true});
     })
 }

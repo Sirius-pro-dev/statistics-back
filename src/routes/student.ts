@@ -18,17 +18,17 @@ export default async function (fastify) {
     })
 
     fastify.get('/student/:id', async (request, reply) => {
-        const student = await studentControllers.studentID(request.body)
+        const student = await studentControllers.studentID(request.params)
         reply.status(201).send({message: student, success: true})
     })
 
     fastify.get('/student/:id/grades', async (request, reply) => {
-        const grades = await studentControllers.studentGrades(request.body)
+        const grades = await studentControllers.studentGrades(request.params)
         reply.status(201).send({message: grades, success: true})
     })
 
     fastify.post('/student/:id/grades', {preHandler: [authMiddleware]}, async (request, reply) => {
-        await studentControllers.studentGradesAdd(request.body)
+        await studentControllers.studentGradesAdd(request.params, request.body)
         reply.status(201).send({message: "Оценка добавлена", success: true});
     })
 }
