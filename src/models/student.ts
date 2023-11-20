@@ -12,9 +12,21 @@ const studentSchema = new mongoose.Schema({
     middlename: {
         type: String
     },
-    groupNumber: {
+    courseNumber: {
+        type: Number,
+        required: true
+    },
+    specialty: {
         type: String,
-        default: undefined
+        required: true
+    },
+    scholarship: {
+        type: String,
+        required: true
+    },
+    formOfTraining: {
+        type: String,
+        required: true
     },
     grades: {
         type: [Number],
@@ -26,7 +38,7 @@ const studentSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        default: 'Студент'
+        default: 'Student'
     },
     email: {
         type: String,
