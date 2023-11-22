@@ -56,7 +56,7 @@ describe('Auth Middleware', () => {
         };
         const mockNext = jest.fn();
 
-        jwt.verify = jest.fn(() => ({ role: 'Студент' }));
+        jwt.verify = jest.fn(() => ({ role: 'Student' }));
 
         authMiddleware(mockRequest, mockResponse, mockNext);
 
