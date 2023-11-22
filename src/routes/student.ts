@@ -12,7 +12,6 @@ export default async function (fastify) {
         reply.status(201).send({message: token, success: true});
     })
 // =====================================================================================================================
-    // 655b4a341615f9f619cab31b
     fastify.post('/student/course', async (request, reply) => {
         const students = await studentControllers.studentsCourse(request.body)
         reply.status(201).send({message: students, success: true});
@@ -23,8 +22,9 @@ export default async function (fastify) {
         reply.status(201).send({message: students.length, success: true});
     })
 
-    fastify.post('/student/passList/:id', async (request, reply) => {
-        const attendance = await studentControllers.studentsPassList(request.params, request.body)
+    // 655dda0a1bceac6fead60793
+    fastify.get('/student/passList/:id', async (request, reply) => {
+        const attendance = await studentControllers.studentsPassList(request.params)
         reply.status(201).send({message: attendance, success: true});
     })
 
@@ -43,8 +43,13 @@ export default async function (fastify) {
         reply.status(201).send({message: attendance, success: true});
     })
 
-    fastify.get('/student/studentsGrades/:id', async (request, reply) => {
+    fastify.get('/student/studentGrades/:id', async (request, reply) => {
         const attendance = await studentControllers.studentGrades(request.params)
+        reply.status(201).send({message: attendance, success: true});
+    })
+
+    fastify.post('/student/studentGradesAdd/:id', async (request, reply) => {
+        const attendance = await studentControllers.studentGradesAdd(request.params, request.body)
         reply.status(201).send({message: attendance, success: true});
     })
 // =====================================================================================================================
@@ -56,15 +61,5 @@ export default async function (fastify) {
     fastify.get('/student/:id', async (request, reply) => {
         const student = await studentControllers.studentID(request.params)
         reply.status(201).send({message: student, success: true})
-    })
-
-    // fastify.get('/student/:id/grades', async (request, reply) => {
-    //     const grades = await studentControllers.studentGrades(request.params)
-    //     reply.status(201).send({message: grades, success: true})
-    // })
-
-    fastify.post('/student/:id/grades', {preHandler: [authMiddleware]}, async (request, reply) => {
-        await studentControllers.studentGradesAdd(request.params, request.body)
-        reply.status(201).send({message: "Оценка добавлена", success: true});
     })
 }

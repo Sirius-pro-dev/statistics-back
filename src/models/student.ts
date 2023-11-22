@@ -29,11 +29,11 @@ const studentSchema = new mongoose.Schema({
         required: true
     },
     grades: {
-        type: [Number],
+        type: [Object],
         default: []
     },
     passList: {
-        type: [String],
+        type: [Object],
         default: []
     },
     role: {

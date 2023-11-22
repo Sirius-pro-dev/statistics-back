@@ -54,7 +54,7 @@ async function studentsSpecialty({ specialty }) {
     return Student.find({ specialty });
 }
 
-async function studentsPassList({ id }, { maxAttendance }) {
+async function studentsPassList({ id }) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -62,21 +62,28 @@ async function studentsPassList({ id }, { maxAttendance }) {
     if (!student) {
         throw new Error(`Нет такого студента`)
     }
-
-    return ((student.passList.length / maxAttendance) * 100).toFixed(2) + "%";
+    return student.passList
 }
 
 async function studentsPassListAdd({ id }, { lack }) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
+
     const student = await Student.findById(id)
     if (!student) {
         throw new Error(`Нет такого студента`)
     }
-    student.passList.push(lack)
-    await student.save();
 
+    const currentDate = new Date();
+    const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}.${(currentDate.getMonth() + 1).toString().padStart(2, '0')}.${currentDate.getFullYear()}`;
+
+    student.passList.push({
+        lack: lack,
+        date: formattedDate
+    })
+
+    await student.save()
     return student
 }
 
@@ -113,17 +120,43 @@ async function studentGrades({ id }) {
         throw new Error(`Нет такого студента`)
     }
 
-    function calculateAverage(numbers) {
-        if (!Array.isArray(numbers) || numbers.length === 0) {
-            return "Оценок нет";
-        }
+    return student.grades
 
-        const sum = numbers.reduce((acc, num) => acc + num, 0);
-        const average = sum / numbers.length;
-        return average.toFixed(2);
+    // const sum = student.grades.reduce((acc, num) => acc + num, 0);
+    // const average = sum / student.grades.length;
+    // return average.toFixed(2);
+}
+
+async function studentGradesAdd({ id }, { grade }) {
+    if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+        throw new Error(`Некорректный формат идентификатора`)
+    }
+    const student = await Student.findById(id);
+    if (!student) {
+        throw new Error(`Нет такого студента`)
+    }
+    if (!grade) {
+        throw new Error(`Некорректный формат тела запроса`)
     }
 
-    return calculateAverage(student.grades)
+    function processNumber(number) {
+        if (number < 1 || number > 5) {
+            throw new Error("Пожалуйста, введите корректную оценку")
+        }
+
+        const currentDate = new Date();
+        const formattedDate = `${currentDate.getDate().toString().padStart(2, '0')}.${(currentDate.getMonth() + 1).toString().padStart(2, '0')}.${currentDate.getFullYear()}`;
+
+        return {
+            number: number,
+            date: formattedDate
+        }
+    }
+
+    student.grades.push(processNumber(grade));
+    await student.save();
+
+    return student;
 }
 // =====================================================================================================================
 async function studentsAll() {
@@ -139,35 +172,6 @@ async function studentID({ id }) {
         throw new Error(`Нет такого студента`)
     }
     return student
-}
-
-// async function studentGrades({ id }) {
-//     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-//         throw new Error(`Некорректный формат идентификатора`)
-//     }
-//     const student = await Student.findById(id);
-//     if (!student) {
-//         throw new Error(`Нет такого студента`)
-//     }
-//     return student.grades
-// }
-
-async function studentGradesAdd({ id }, { grade }) {
-    if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-        throw new Error(`Некорректный формат идентификатора`)
-    }
-    const student = await Student.findById(id);
-    if (!student) {
-        throw new Error(`Нет такого студента`)
-    }
-    if (!grade) {
-        throw new Error(`Некорректный формат тела запроса`)
-    }
-
-    student.grades.push(grade);
-    await student.save();
-
-    return student;
 }
 
 export default {
