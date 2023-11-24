@@ -5,9 +5,15 @@ import path from 'node:path'
 import { connect } from './connect'
 import teacher from './routes/teacher'
 import student from './routes/student'
+import cors from 'fastify-cors'
 
 export const fastify = Fastify({
   logger: true
+})
+
+fastify.register(cors, {
+  origin: '*',
+  methods: ['GET', 'POST']
 })
 
 fastify.register(teacher, student)
