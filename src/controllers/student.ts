@@ -46,12 +46,14 @@ async function studentLogin({ email, password }) {
 }
 
 // =====================================================================================================================
-async function studentsCourse({ courseNumber }) {
-    return Student.find({ courseNumber });
+async function studentsCourse(query) {
+    const { courseNumber } = query;
+    return Student.find({ courseNumber: parseInt(courseNumber) });
 }
 
-async function studentsSpecialty({ specialty }) {
-    return Student.find({ specialty });
+async function studentsSpecialty(query) {
+    const { specialtyName } = query;
+    return Student.find({ specialty: specialtyName });
 }
 
 async function studentsPassList({ id }) {

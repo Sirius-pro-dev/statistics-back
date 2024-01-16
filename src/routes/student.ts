@@ -11,15 +11,15 @@ export default async function (fastify) {
         reply.status(201).send({message: token, success: true});
     })
 
-    fastify.post('/student/course', async (request, reply) => {
-        const students = await studentControllers.studentsCourse(request.body)
-        reply.status(201).send({message: students, success: true});
-    })
+    fastify.get('/student/course', async (request, reply) => {
+        const students = await studentControllers.studentsCourse(request.query);
+        reply.status(201).send({ message: students, success: true });
+    });
 
-    fastify.post('/student/specialty', async (request, reply) => {
-        const students = await studentControllers.studentsSpecialty(request.body)
-        reply.status(201).send({message: students.length, success: true});
-    })
+    fastify.get('/student/specialty', async (request, reply) => {
+        const students = await studentControllers.studentsSpecialty(request.query);
+        reply.status(200).send({ message: students, success: true });
+    });
 
     fastify.get('/student/passList/:id', async (request, reply) => {
         const attendance = await studentControllers.studentsPassList(request.params)
