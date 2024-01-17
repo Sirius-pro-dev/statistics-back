@@ -60,58 +60,70 @@ async function studentsSpecialty(query) {
 async function findStudentsByCourseNumber(query) {
     const {courseNumber} = query;
 
-    async function dailyAttendance(courseNumber, date) {
-        const totalStudents = await Student.find({
-            courseNumber: parseInt(courseNumber)
-        })
+    // async function dailyAttendance(courseNumber, date) {
+    //     const totalStudents = await Student.find({
+    //         courseNumber: parseInt(courseNumber)
+    //     })
+    //
+    //     const studentsAbsent = await Student.find({
+    //             courseNumber: parseInt(courseNumber),
+    //             passList: {
+    //                 $elemMatch: {
+    //                     date: date
+    //                 }
+    //             }
+    //         }
+    //     );
+    //
+    //     return ((totalStudents.length - studentsAbsent.length) / totalStudents.length) * 100;
+    // }
+    //
+    // function printCurrentDateAndDay() {
+    //     const currentDate = new Date();
+    //     const dayOfWeek = (currentDate.getDay() + 6) % 7 + 1;
+    //     const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+    //     const pastDays = [];
+    //
+    //     for (let i = dayOfWeek - 1; i > 0; i--) {
+    //         let previousDay = new Date();
+    //         previousDay.setDate(currentDate.getDate() - i);
+    //         let formattedPreviousDate = previousDay.toLocaleDateString('ru-RU', {
+    //             day: 'numeric',
+    //             month: 'numeric',
+    //             year: 'numeric'
+    //         });
+    //         let previousDayOfWeek = (previousDay.getDay() + 6) % 7 + 1;
+    //         let previousDayName = daysOfWeek[previousDayOfWeek];
+    //         pastDays.push({date: formattedPreviousDate, daysOfWeek: previousDayName});
+    //     }
+    //
+    //     return pastDays
+    // }
+    //
+    // const pastDays = printCurrentDateAndDay();
+    // const promises = pastDays.map(day => dailyAttendance(courseNumber, day.date));
+    //
+    // const statistics = await Promise.all(promises);
+    // const statisticsDays = pastDays.map((day, index) => statistics[index]);
+    //
+    // console.log(statisticsDays);
 
-        const studentsAbsent = await Student.find({
-                courseNumber: parseInt(courseNumber),
-                passList: {
-                    $elemMatch: {
-                        date: date
-                    }
-                }
-            }
-        );
-
-        return ((totalStudents.length - studentsAbsent.length) / totalStudents.length) * 100;
+    if (courseNumber === '1') {
+        const test = [30, 40, 20, 50, 40, 80, 90]
+        console.log(test)
+        return test
     }
-
-    function printCurrentDateAndDay() {
-        const currentDate = new Date();
-        const dayOfWeek = (currentDate.getDay() + 6) % 7 + 1;
-        const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
-        const pastDays = [];
-
-        for (let i = dayOfWeek - 1; i > 0; i--) {
-            let previousDay = new Date();
-            previousDay.setDate(currentDate.getDate() - i);
-            let formattedPreviousDate = previousDay.toLocaleDateString('ru-RU', {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric'
-            });
-            let previousDayOfWeek = (previousDay.getDay() + 6) % 7 + 1;
-            let previousDayName = daysOfWeek[previousDayOfWeek];
-            pastDays.push({date: formattedPreviousDate, daysOfWeek: previousDayName});
-        }
-
-        return pastDays
+    if (courseNumber === '2') {
+        const test = [20, 50, 15, 50, 30, 70, 95]
+        console.log(test)
+        return test
     }
-
-    const pastDays = printCurrentDateAndDay();
-    const promises = pastDays.map(day => dailyAttendance(courseNumber, day.date));
-
-    const statistics = await Promise.all(promises);
-    const statisticsDays = pastDays.map((day, index) => ({
-        percent: statistics[index],
-        dayOfTheWeek: day.daysOfWeek,
-        day: day.date
-    }));
-
-    console.log(statisticsDays);
-    return statisticsDays;
+    if (courseNumber === '3') {
+        const test = [10, 90, 55, 30, 30, 80, 40]
+        console.log(test)
+        return test
+    }
+    // return statisticsDays;
 }
 
 async function studentsPassList({id}) {
