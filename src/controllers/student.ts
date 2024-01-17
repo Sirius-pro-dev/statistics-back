@@ -1,6 +1,7 @@
 import Student from "../models/student"
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import {log} from "node:util";
 
 const generateAccessToken = (id, role) => {
     const payload = {
@@ -11,15 +12,15 @@ const generateAccessToken = (id, role) => {
 }
 
 async function studentRegistration({
-        firstname,
-        lastname,
-        courseNumber,
-        specialty,
-        scholarship,
-        formOfTraining,
-        email,
-        password
-    }) {
+                                       firstname,
+                                       lastname,
+                                       courseNumber,
+                                       specialty,
+                                       scholarship,
+                                       formOfTraining,
+                                       email,
+                                       password
+                                   }) {
     const candidate = await Student.findOne({email})
     if (candidate) {
         throw new Error(`Пользователь c почтой ${email} уже существует`)
@@ -37,7 +38,7 @@ async function studentRegistration({
     })
 }
 
-async function studentLogin({ email, password }) {
+async function studentLogin({email, password}) {
     const student = await Student.findOne({email})
     if (!student || !bcrypt.compareSync(password, student.password)) {
         throw new Error(`Неправильная почта или пароль`);
@@ -47,16 +48,73 @@ async function studentLogin({ email, password }) {
 
 // =====================================================================================================================
 async function studentsCourse(query) {
-    const { courseNumber } = query;
-    return Student.find({ courseNumber: parseInt(courseNumber) });
+    const {courseNumber} = query;
+    return Student.find({courseNumber: parseInt(courseNumber)});
 }
 
 async function studentsSpecialty(query) {
-    const { specialtyName } = query;
-    return Student.find({ specialty: specialtyName });
+    const {specialtyName} = query;
+    return Student.find({specialty: specialtyName});
 }
 
-async function studentsPassList({ id }) {
+async function findStudentsByCourseNumber(query) {
+    const {courseNumber} = query;
+
+    async function dailyAttendance(courseNumber, date) {
+        const totalStudents = await Student.find({
+            courseNumber: parseInt(courseNumber)
+        })
+
+        const studentsAbsent = await Student.find({
+                courseNumber: parseInt(courseNumber),
+                passList: {
+                    $elemMatch: {
+                        date: date
+                    }
+                }
+            }
+        );
+
+        return ((totalStudents.length - studentsAbsent.length) / totalStudents.length) * 100;
+    }
+
+    function printCurrentDateAndDay() {
+        const currentDate = new Date();
+        const dayOfWeek = (currentDate.getDay() + 6) % 7 + 1;
+        const daysOfWeek = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+        const pastDays = [];
+
+        for (let i = dayOfWeek - 1; i > 0; i--) {
+            let previousDay = new Date();
+            previousDay.setDate(currentDate.getDate() - i);
+            let formattedPreviousDate = previousDay.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            });
+            let previousDayOfWeek = (previousDay.getDay() + 6) % 7 + 1;
+            let previousDayName = daysOfWeek[previousDayOfWeek];
+            pastDays.push({date: formattedPreviousDate, daysOfWeek: previousDayName});
+        }
+
+        return pastDays
+    }
+
+    const pastDays = printCurrentDateAndDay();
+    const promises = pastDays.map(day => dailyAttendance(courseNumber, day.date));
+
+    const statistics = await Promise.all(promises);
+    const statisticsDays = pastDays.map((day, index) => ({
+        percent: statistics[index],
+        dayOfTheWeek: day.daysOfWeek,
+        day: day.date
+    }));
+
+    console.log(statisticsDays);
+    return statisticsDays;
+}
+
+async function studentsPassList({id}) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -67,7 +125,7 @@ async function studentsPassList({ id }) {
     return student.passList
 }
 
-async function studentsPassListAdd({ id }, { lack }) {
+async function studentsPassListAdd({id}, {lack}) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -89,7 +147,7 @@ async function studentsPassListAdd({ id }, { lack }) {
     return student
 }
 
-async function studentsScholarship({ id }) {
+async function studentsScholarship({id}) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -101,7 +159,7 @@ async function studentsScholarship({ id }) {
     return student.scholarship
 }
 
-async function studentsFormOfTraining({ id }) {
+async function studentsFormOfTraining({id}) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -113,7 +171,7 @@ async function studentsFormOfTraining({ id }) {
     return student.formOfTraining
 }
 
-async function studentGrades({ id }) {
+async function studentGrades({id}) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -129,7 +187,7 @@ async function studentGrades({ id }) {
     // return average.toFixed(2);
 }
 
-async function studentGradesAdd({ id }, { grade }) {
+async function studentGradesAdd({id}, {grade}) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -160,12 +218,13 @@ async function studentGradesAdd({ id }, { grade }) {
 
     return student;
 }
+
 // =====================================================================================================================
 async function studentsAll() {
     return Student.find()
 }
 
-async function studentID({ id }) {
+async function studentID({id}) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
     }
@@ -181,6 +240,7 @@ export default {
     studentLogin,
     studentsCourse,
     studentsSpecialty,
+    findStudentsByCourseNumber,
     studentsPassList,
     studentsPassListAdd,
     studentsScholarship,
