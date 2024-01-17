@@ -126,6 +126,18 @@ async function findStudentsByCourseNumber(query) {
     // return statisticsDays;
 }
 
+async function attendancePerWeek() {
+    const test = [30, 40, 20, 50, 40, 80]
+    console.log(test)
+    return test
+}
+
+async function dailyAttendance() {
+    const test = 70
+    console.log(test)
+    return test
+}
+
 async function studentsPassList({id}) {
     if (!/^[0-9a-fA-F]{24}$/.test(id)) {
         throw new Error(`Некорректный формат идентификатора`)
@@ -253,6 +265,8 @@ export default {
     studentsCourse,
     studentsSpecialty,
     findStudentsByCourseNumber,
+    attendancePerWeek,
+    dailyAttendance,
     studentsPassList,
     studentsPassListAdd,
     studentsScholarship,
