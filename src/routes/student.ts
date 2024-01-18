@@ -21,8 +21,13 @@ export default async function (fastify) {
         reply.status(200).send({message: students, success: true});
     });
 
-    fastify.get('/students/findStudentsByCourseNumber', async (request, reply) => {
-        const students = await studentControllers.findStudentsByCourseNumber(request.query);
+    fastify.get('/students/quantityStudentCourse', async (request, reply) => {
+        const students = await studentControllers.quantityStudentCourse();
+        reply.status(201).send({message: students, success: true});
+    });
+
+    fastify.get('/students/attendanceСhart', async (request, reply) => {
+        const students = await studentControllers.attendanceСhart();
         reply.status(201).send({message: students, success: true});
     });
 

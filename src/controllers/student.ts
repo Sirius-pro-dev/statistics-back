@@ -57,8 +57,8 @@ async function studentsSpecialty(query) {
     return Student.find({specialty: specialtyName});
 }
 
-async function findStudentsByCourseNumber(query) {
-    const {courseNumber} = query;
+async function attendanceСhart() {
+    // const {courseNumber} = query;
 
     // async function dailyAttendance(courseNumber, date) {
     //     const totalStudents = await Student.find({
@@ -108,32 +108,53 @@ async function findStudentsByCourseNumber(query) {
     //
     // console.log(statisticsDays);
 
-    if (courseNumber === '1') {
-        const test = [30, 40, 20, 50, 40, 80, 90]
-        console.log(test)
-        return test
-    }
-    if (courseNumber === '2') {
-        const test = [20, 50, 15, 50, 30, 70, 95]
-        console.log(test)
-        return test
-    }
-    if (courseNumber === '3') {
-        const test = [10, 90, 55, 30, 30, 80, 40]
-        console.log(test)
-        return test
+    return {
+        course1: [30, 40, 20, 50, 40, 80, 90],
+        course2: [20, 50, 15, 50, 30, 70, 95],
+        course3: [10, 90, 55, 30, 30, 80, 40]
     }
     // return statisticsDays;
 }
 
+
+
+
+
+
+
+
+
+
+
+async function quantityStudentCourse() {
+    return [50, 60, 100]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function attendancePerWeek() {
-    const test = [30, 40, 20, 50, 40, 80]
+    const test = [4000, 3000, 2000, 2780, 1890, 2390]
     console.log(test)
     return test
 }
 
 async function dailyAttendance() {
-    const test = 70
+    const test = '70'
     console.log(test)
     return test
 }
@@ -264,7 +285,8 @@ export default {
     studentLogin,
     studentsCourse,
     studentsSpecialty,
-    findStudentsByCourseNumber,
+    attendanceСhart,
+    quantityStudentCourse,
     attendancePerWeek,
     dailyAttendance,
     studentsPassList,
